@@ -1,0 +1,5 @@
+ssdl:
+  build: .
+  volumes:
+    - ./code:/code
+    - ./data:/data
