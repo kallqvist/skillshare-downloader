@@ -54,13 +54,17 @@ class Downloader(object):
                     # emulate an android device
                     raise Exception('Failed to read video ID from data')
 
+                file_name = '{} - {}'.format(
+                    str(s['index'] + 1).zfill(2),
+                    s['title'],
+                )
+                file_name = file_name.replace('/', '-')
+                file_name = file_name.replace(':', '-')
+
                 self.download_video(
                     fpath='{base_path}/{session}.mp4'.format(
                         base_path=base_path,
-                        session='{} - {}'.format(
-                            str(s['index'] + 1).zfill(2),
-                            s['title'].replace('/', ':'),
-                        )
+                        session=file_name,
                     ),
                     video_id=video_id,
                 )
