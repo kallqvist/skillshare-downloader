@@ -32,11 +32,19 @@ class Downloader(object):
             teacher_name = data['_embedded']['teacher']['full_name']
         if teacher_name is None:
             raise Exception('Failed to read teacher name from data')
+        if isinstance(teacher_name, unicode):
+            teacher_name = teacher_name.encode('ascii', 'replace')
+
+        title = data['title']
+        title = title.replace(u'\u2018', "'")  # single quote left
+        title = title.replace(u'\u2019', "'")  # signle quote right
+        if isinstance(title, unicode):
+            title = title.encode('ascii', 'replace')  # ignore any weird char
 
         base_path = '{download_path}/{teacher_name}/{class_name}/'.format(
             download_path=self.download_path.rstrip('/'),
             teacher_name=teacher_name,
-            class_name=data['title'],
+            class_name=title,
         ).rstrip('/')
         if not os.path.exists(base_path):
             os.makedirs(base_path)
@@ -54,9 +62,15 @@ class Downloader(object):
                     # emulate an android device
                     raise Exception('Failed to read video ID from data')
 
+                s_title = s['title']
+                s_title = s_title.replace(u'\u2018', "'")  # single quote left
+                s_title = s_title.replace(u'\u2019', "'")  # signle quote right
+                if isinstance(s_title, unicode):
+                    s_title = s_title.encode('ascii', 'replace')  # ignore any weird char
+
                 file_name = '{} - {}'.format(
                     str(s['index'] + 1).zfill(2),
-                    s['title'],
+                    s_title,
                 )
                 file_name = file_name.replace('/', '-')
                 file_name = file_name.replace(':', '-')
