@@ -36,6 +36,7 @@ class Downloader(object):
             teacher_name = teacher_name.encode('ascii', 'replace')
 
         title = data['title']
+        title = title.replace(":", "-") # prevent error when title have colon character
         title = title.replace(u'\u2018', "'")  # single quote left
         title = title.replace(u'\u2019', "'")  # signle quote right
         if isinstance(title, unicode):
