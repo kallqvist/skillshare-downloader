@@ -3,15 +3,17 @@ import json
 import sys
 import re
 import os
+from slugify import slugify
 
 
 class Downloader(object):
-    def __init__(self,
-                 cookie,
-                 download_path='/data',
-                 pk='BCpkADawqM2OOcM6njnM7hf9EaK6lIFlqiXB0iWjqGWUQjU7R8965xUvIQNqdQbnDTLz0IAO7E6Ir2rIbXJtFdzrGtitoee0n1XXRliD-RH9A-svuvNW9qgo3Bh34HEZjXjG4Nml4iyz3KqF',
-                 brightcove_account_id=3695997568001,
-                 ):
+    def __init__(
+        self,
+        cookie,
+        download_path='/data',
+        pk='BCpkADawqM2OOcM6njnM7hf9EaK6lIFlqiXB0iWjqGWUQjU7R8965xUvIQNqdQbnDTLz0IAO7E6Ir2rIbXJtFdzrGtitoee0n1XXRliD-RH9A-svuvNW9qgo3Bh34HEZjXjG4Nml4iyz3KqF',
+        brightcove_account_id=3695997568001,
+    ):
         self.cookie = cookie.strip()
         self.download_path = download_path
         self.pk = pk.strip()
@@ -36,16 +38,12 @@ class Downloader(object):
             teacher_name = teacher_name.encode('ascii', 'replace')
 
         title = data['title']
-        title = title.replace(":", "-") # prevent error when title have colon character
-        title = title.replace(u'\u2018', "'")  # single quote left
-        title = title.replace(u'\u2019', "'")  # signle quote right
         if isinstance(title, unicode):
             title = title.encode('ascii', 'replace')  # ignore any weird char
-
-        base_path = '{download_path}/{teacher_name}/{class_name}/'.format(
-            download_path=self.download_path.rstrip('/'),
-            teacher_name=teacher_name,
-            class_name=title,
+        base_path = os.path.join(
+            self.download_path,
+            slugify(teacher_name),
+            slugify(title),
         ).rstrip('/')
         if not os.path.exists(base_path):
             os.makedirs(base_path)
@@ -64,17 +62,13 @@ class Downloader(object):
                     raise Exception('Failed to read video ID from data')
 
                 s_title = s['title']
-                s_title = s_title.replace(u'\u2018', "'")  # single quote left
-                s_title = s_title.replace(u'\u2019', "'")  # signle quote right
                 if isinstance(s_title, unicode):
                     s_title = s_title.encode('ascii', 'replace')  # ignore any weird char
 
                 file_name = '{} - {}'.format(
                     str(s['index'] + 1).zfill(2),
-                    s_title,
+                    slugify(s_title),
                 )
-                file_name = file_name.replace('/', '-')
-                file_name = file_name.replace(':', '-')
 
                 self.download_video(
                     fpath='{base_path}/{session}.mp4'.format(
