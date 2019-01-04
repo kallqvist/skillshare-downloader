@@ -10,7 +10,7 @@ class Downloader(object):
     def __init__(
         self,
         cookie,
-        download_path='/data',
+        download_path=os.environ.get('FILE_PATH', './data'),
         pk='BCpkADawqM2OOcM6njnM7hf9EaK6lIFlqiXB0iWjqGWUQjU7R8965xUvIQNqdQbnDTLz0IAO7E6Ir2rIbXJtFdzrGtitoee0n1XXRliD-RH9A-svuvNW9qgo3Bh34HEZjXjG4Nml4iyz3KqF',
         brightcove_account_id=3695997568001,
     ):
@@ -40,10 +40,12 @@ class Downloader(object):
         title = data['title']
         if isinstance(title, unicode):
             title = title.encode('ascii', 'replace')  # ignore any weird char
-        base_path = os.path.join(
-            self.download_path,
-            slugify(teacher_name),
-            slugify(title),
+        base_path = os.path.abspath(
+            os.path.join(
+                self.download_path,
+                slugify(teacher_name),
+                slugify(title),
+            )
         ).rstrip('/')
         if not os.path.exists(base_path):
             os.makedirs(base_path)

@@ -1,5 +1,7 @@
 ssdl:
   build: .
+  environment:
+    FILE_PATH: '/data/'
   volumes:
     - ./code:/code
     - ./data:/data
