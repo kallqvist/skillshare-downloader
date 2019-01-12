@@ -42,10 +42,10 @@ class Downloader(object):
         if 'vanity_username' in data['_embedded']['teacher']:
             teacher_name = data['_embedded']['teacher']['vanity_username']
 
-        if teacher_name is None:
+        if not teacher_name:
             teacher_name = data['_embedded']['teacher']['full_name']
 
-        if teacher_name is None:
+        if not teacher_name:
             raise Exception('Failed to read teacher name from data')
         
         if self.is_unicode_string(teacher_name):
@@ -74,7 +74,7 @@ class Downloader(object):
                 if 'video_hashed_id' in s and s['video_hashed_id']:
                     video_id = s['video_hashed_id'].split(':')[1]
 
-                if video_id is None:
+                if not video_id:
                     # NOTE: this happens sometimes...
                     # seems random and temporary but might be some random
                     # server-side check on user-agent etc?
@@ -152,17 +152,18 @@ class Downloader(object):
             response = requests.get(dl_url, allow_redirects=True, stream=True)
             total_length = response.headers.get('content-length')
 
-            if total_length is None:
+            if not total_length:
                 f.write(response.content)
 
             else:
                 dl = 0
                 total_length = int(total_length)
+
                 for data in response.iter_content(chunk_size=4096):
                     dl += len(data)
                     f.write(data)
                     done = int(50 * dl / total_length)
-                    sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50-done)) )
+                    sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50 - done)))
                     sys.stdout.flush()
 
             print('')
