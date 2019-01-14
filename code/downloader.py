@@ -19,17 +19,17 @@ class Downloader(object):
         self.pk = pk.strip()
         self.brightcove_account_id = brightcove_account_id
         self.pythonversion = 3 if sys.version_info >= (3, 0) else 2
-    
+
     def is_unicode_string(self, string):
         if (self.pythonversion == 3 and isinstance(string, str)) or (self.pythonversion == 2 and isinstance(string, unicode)):
             return True
-        
+
         else:
             return False
 
     def download_course_by_url(self, url):
         m = re.match(r'https://www.skillshare.com/classes/.*?/(\d+)', url)
-        
+
         if not m:
             raise Exception('Failed to parse class ID from URL')
 
@@ -47,7 +47,7 @@ class Downloader(object):
 
         if not teacher_name:
             raise Exception('Failed to read teacher name from data')
-        
+
         if self.is_unicode_string(teacher_name):
             teacher_name = teacher_name.encode('ascii', 'replace')
 
