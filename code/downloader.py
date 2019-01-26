@@ -142,7 +142,6 @@ class Downloader(object):
                 break
 
         print('Downloading {}...'.format(fpath))
-        fpath = re.sub(r'[*?:"<>|]',"",fpath)
 
         if os.path.exists(fpath):
             print('Video already downloaded, skipping...')
