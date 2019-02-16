@@ -14,7 +14,7 @@ class Downloader(object):
         pk='BCpkADawqM2OOcM6njnM7hf9EaK6lIFlqiXB0iWjqGWUQjU7R8965xUvIQNqdQbnDTLz0IAO7E6Ir2rIbXJtFdzrGtitoee0n1XXRliD-RH9A-svuvNW9qgo3Bh34HEZjXjG4Nml4iyz3KqF',
         brightcove_account_id=3695997568001,
     ):
-        self.cookie = cookie.strip()
+        self.cookie = cookie.strip().strip('"')
         self.download_path = download_path
         self.pk = pk.strip()
         self.brightcove_account_id = brightcove_account_id
