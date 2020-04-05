@@ -1,10 +1,5 @@
 # Skillshare video downloader in python
 
-I needed offline access to some skillshare courses I wanted to take while on vacation.
-Video download is only available in the skillshare mobile apps and I didn't want to
-choose between shaky 3G streaming or watching on a tiny mobile screen so I put together a
-quick and dirty video downloader in python.
-
 ### Support your content creators, do NOT use this for piracy!
 
 You will need a skillshare premium account to access premium content.
@@ -27,17 +22,12 @@ from downloader import Downloader
 cookie = """
 ADD YOUR COOKIE HERE
 """
+4. Run the script and enter the number of courses you want to download. Then enter the URL of each of the courses.
 
-dl = Downloader(cookie=cookie)
+    If you choose to download all classes in a public list (for example: https://www.skillshare.com/lists/Classes-for-Getting-Creative-Indoors/1347947), use the
+    download_list() function and enter the URL of the list.
 
-# download by class URL:
-dl.download_course_by_url('https://www.skillshare.com/classes/Art-Fundamentals-in-One-Hour/189505397')
-
-# or by class ID:
-# dl.download_course_by_class_id(189505397)
-```
-
-4. (Optionally) run with docker and docker-compose:
+5. (Optionally) run with docker and docker-compose:
 ```
 docker-compose build
 docker-compose run --rm ssdl python example.py
