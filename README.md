@@ -22,6 +22,7 @@ from downloader import Downloader
 cookie = """
 ADD YOUR COOKIE HERE
 """
+
 4. Run the script and enter the number of courses you want to download. Then enter the URL of each of the courses.
 
     If you choose to download all classes in a public list (for example: https://www.skillshare.com/lists/Classes-for-Getting-Creative-Indoors/1347947), use the
