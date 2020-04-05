@@ -22,6 +22,7 @@ from downloader import Downloader
 cookie = """
 ADD YOUR COOKIE HERE
 """
+```
 
 4. Run the script and enter the number of courses you want to download. Then enter the URL of each of the courses.
 
