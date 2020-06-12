@@ -4,6 +4,8 @@ import sys
 import re
 import os
 from slugify import slugify
+import cloudscraper
+from bs4 import BeautifulSoup as BS
 
 
 class Downloader(object):
@@ -103,8 +105,16 @@ class Downloader(object):
                 print('')
 
     def fetch_course_data_by_class_id(self, class_id):
-        res = requests.get(
-            url='https://api.skillshare.com/classes/{}'.format(class_id),
+        url = 'https://api.skillshare.com/classes/{}'.format(class_id)
+        scraper = cloudscraper.create_scraper(
+            browser={
+                'custom': 'Skillshare/4.1.1; Android 5.1.1',
+            },
+            delay=10
+        )
+
+        res = scraper.get(
+            url,
             headers={
                 'Accept': 'application/vnd.skillshare.class+json;,version=0.8',
                 'User-Agent': 'Skillshare/4.1.1; Android 5.1.1',
@@ -124,11 +134,22 @@ class Downloader(object):
             video_id=video_id,
         )
 
-        meta_res = requests.get(
+        scraper = cloudscraper.create_scraper(
+            browser={
+                'custom': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3',
+            },
+            delay=10
+        )
+
+        meta_res = scraper.get(
             meta_url,
             headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.3',
+                'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
+                'Accept-Encoding': 'none',
+                'Accept-Language': 'en-US,en;q=0.8',
+                'Connection': 'keep-alive',
                 'Accept': 'application/json;pk={}'.format(self.pk),
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
                 'Origin': 'https://www.skillshare.com'
             }
         )
@@ -136,11 +157,11 @@ class Downloader(object):
         if meta_res.status_code != 200:
             raise Exception('Failed to fetch video meta')
 
-        for x in meta_res.json()['sources']:
-            if 'container' in x:
-                if x['container'] == 'MP4' and 'src' in x:
-                    dl_url = x['src']
-                    break
+        if meta_res.json()['sources'][6]['container'] == 'MP4' and 'src' in meta_res.json()['sources'][6]:
+            dl_url = meta_res.json()['sources'][6]['src']
+            # break
+        else:
+            dl_url = meta_res.json()['sources'][1]['src']
 
         print('Downloading {}...'.format(fpath))
 
