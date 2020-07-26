@@ -1,1 +1,4 @@
 data/*
+.idea
+code/data/*
+code/houdinii.py
