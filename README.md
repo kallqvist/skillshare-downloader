@@ -1,11 +1,11 @@
-# Skillshare video downloader in python
+# Skillshare video downloader in python 
 
 I needed offline access to some skillshare courses I wanted to take while on vacation.
 Video download is only available in the skillshare mobile apps and I didn't want to
 choose between shaky 3G streaming or watching on a tiny mobile screen so I put together a
 quick and dirty video downloader in python.
 
-### Support your content creators, do NOT use this for piracy!
+### Support your content creators, do NOT use this for piracy!stop piracy
 
 You will need a skillshare premium account to access premium content.
 This script will not handle login for you.
