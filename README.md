@@ -5,6 +5,20 @@ Video download is only available in the skillshare mobile apps and I didn't want
 choose between shaky 3G streaming or watching on a tiny mobile screen so I put together a
 quick and dirty video downloader in python.
 
+### Installation of dependencies:
+
+Environment: Python 3.7+
+
+```
+pip install -r requirements.txt
+```
+
+or
+
+```
+python3 -m pip install -r requirements.txt
+```
+
 ### Support your content creators, do NOT use this for piracy!
 
 You will need a skillshare premium account to access premium content.

@@ -168,3 +168,36 @@ class Downloader(object):
                     sys.stdout.flush()
 
             print('')
+
+        try:
+            for x in meta_res.json()['text_tracks']:
+                sub_url = x['src']
+                break
+
+            subpath = fpath.replace(".mp4", ".vtt")
+            print('Downloading sub {}...'.format(subpath))
+
+            if os.path.exists(subpath):
+                print('Video already downloaded, skipping...')
+                return
+
+            with open(subpath, 'wb') as f:
+                response = requests.get(sub_url, allow_redirects=True, stream=True)
+                total_length = response.headers.get('content-length')
+
+                if not total_length:
+                    f.write(response.content)
+
+                else:
+                    dl = 0
+                    total_length = int(total_length)
+
+                    for data in response.iter_content(chunk_size=4096):
+                        dl += len(data)
+                        f.write(data)
+                        done = int(50 * dl / total_length)
+                        sys.stdout.write("\r[%s%s]" % ('=' * done, ' ' * (50 - done)))
+                        sys.stdout.flush()
+
+        except:
+            print("error on subtitle")
