@@ -10,12 +10,14 @@ class Downloader(object):
     def __init__(
         self,
         cookie,
+        subtitle_lang,
         download_path=os.environ.get('FILE_PATH', './data'),
         pk='BCpkADawqM2OOcM6njnM7hf9EaK6lIFlqiXB0iWjqGWUQjU7R8965xUvIQNqdQbnDTLz0IAO7E6Ir2rIbXJtFdzrGtitoee0n1XXRliD-RH9A-svuvNW9qgo3Bh34HEZjXjG4Nml4iyz3KqF',
         brightcove_account_id=3695997568001,
     ):
         self.cookie = cookie.strip().strip('"')
         self.download_path = download_path
+        self.subtitle_lang = subtitle_lang
         self.pk = pk.strip()
         self.brightcove_account_id = brightcove_account_id
         self.pythonversion = 3 if sys.version_info >= (3, 0) else 2
@@ -118,6 +120,38 @@ class Downloader(object):
             raise Exception('Fetch error, code == {}'.format(res.status_code))
 
         return res.json()
+    def download_subtitle(self,fpath,st_url):
+        print('Downloading subtitles...')
+        
+        res = requests.get(
+            url=st_url,
+            headers={
+                'Accept': 'text/plain,text/html',
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
+                'Origin': 'https://www.skillshare.com'
+            }
+        )
+        
+        if not res.status_code == 200:
+            raise Exception('Fetch error, code == {}'.format(res.status_code))
+        
+        file_contents = res.content
+        
+        replacement = re.sub(r"(\d\d:\d\d:\d\d).(\d\d\d) --> (\d\d:\d\d:\d\d).(\d\d\d)(?:[ \-\w]+:[\w\%\d:]+)*\n", r"\1,\2 --> \3,\4\n", file_contents)
+        replacement = re.sub(r"(\d\d:\d\d).(\d\d\d) --> (\d\d:\d\d).(\d\d\d)(?:[ \-\w]+:[\w\%\d:]+)*\n", r"\1,\2 --> \3,\4\n", replacement)
+        replacement = re.sub(r"(\d\d).(\d\d\d) --> (\d\d).(\d\d\d)(?:[ \-\w]+:[\w\%\d:]+)*\n", r"\1,\2 --> \3,\4\n", replacement)
+        replacement = re.sub(r"WEBVTT\n", "", replacement)
+        replacement = re.sub(r"Kind:[ \-\w]+\n", "", replacement)
+        replacement = re.sub(r"Language:[ \-\w]+\n", "", replacement)
+        replacement = re.sub(r"<c[.\w\d]*>", "", replacement)
+        replacement = re.sub(r"</c>", "", replacement)
+        replacement = re.sub(r"<\d\d:\d\d:\d\d.\d\d\d>", "", replacement)
+        replacement = re.sub(r"::[\-\w]+\([\-.\w\d]+\)[ ]*{[.,:;\(\) \-\w\d]+\n }\n", "", replacement)
+        final_st = re.sub(r"Style:\n##\n", "", replacement)
+        
+        f = open(fpath+".srt", "w")
+        f.write(final_st)
+        f.close()
 
     def download_video(self, fpath, video_id):
         meta_url = 'https://edge.api.brightcove.com/playback/v1/accounts/{account_id}/videos/{video_id}'.format(
@@ -143,13 +177,24 @@ class Downloader(object):
                     dl_url = x['src']
                     break
 
-        print('Downloading {}...'.format(fpath))
+        for x in meta_res.json()['text_tracks']:
+            if 'label' in x:
+                if x['label'] == self.subtitle_lang and 'src' in x:
+                    st_url = x['src']
+                    break
 
-        if os.path.exists(fpath):
-            print('Video already downloaded, skipping...')
+        print('Downloading {}...'.format(fpath+".mp4"))
+
+        if os.path.exists(fpath+".mp4"):
+            if os.path.exists(fpath+".srt"):
+                print('Video and subtitles already downloaded...')
+                return
+            self.download_subtitle(fpath,st_url)
             return
 
-        with open(fpath, 'wb') as f:
+        self.download_subtitle(fpath,st_url)
+        
+        with open(fpath+".mp4", 'wb') as f:
             response = requests.get(dl_url, allow_redirects=True, stream=True)
             total_length = response.headers.get('content-length')
 
