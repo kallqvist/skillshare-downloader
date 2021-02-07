@@ -4,6 +4,8 @@ cookie = """
 ADD YOUR COOKIE HERE
 """
 
+subtitle_lang = "English"
+
 dl = Downloader(cookie=cookie)
 
 # download by class URL:
