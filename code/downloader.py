@@ -35,6 +35,17 @@ class Downloader(object):
 
         self.download_course_by_class_id(m.group(1))
 
+    def extract_video_hashed_id_from_s(self, s):
+        video_id = None
+        if 'video_hashed_id' in s and s['video_hashed_id']:
+            video_id = s['video_hashed_id'].split(':')[1]
+        elif 'video_thumbnail_url' in s:
+            url = s['video_thumbnail_url']
+            start_index = url.find('thumbnails/') + len('thumbnails/')
+            video_id = url[start_index:].split('/')[0]
+            print(f'THUMBNAIL {video_id=}')
+        return video_id
+        
     def download_course_by_class_id(self, class_id):
         data = self.fetch_course_data_by_class_id(class_id=class_id)
         teacher_name = None
@@ -69,10 +80,7 @@ class Downloader(object):
 
         for u in data['_embedded']['units']['_embedded']['units']:
             for s in u['_embedded']['sessions']['_embedded']['sessions']:
-                video_id = None
-
-                if 'video_hashed_id' in s and s['video_hashed_id']:
-                    video_id = s['video_hashed_id'].split(':')[1]
+                video_id = self.extract_video_hashed_id_from_s(s)
 
                 if not video_id:
                     # NOTE: this happens sometimes...
