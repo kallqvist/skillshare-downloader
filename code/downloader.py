@@ -29,7 +29,6 @@ class Downloader(object):
 
     def download_course_by_url(self, url):
         m = re.match(r'https://www.skillshare.com/classes/.*?/(\d+)', url)
-
         if not m:
             raise Exception('Failed to parse class ID from URL')
 
@@ -67,40 +66,40 @@ class Downloader(object):
         if not os.path.exists(base_path):
             os.makedirs(base_path)
 
-        for u in data['_embedded']['units']['_embedded']['units']:
-            for s in u['_embedded']['sessions']['_embedded']['sessions']:
-                video_id = None
+        #for u in data['_embedded']['units']['_embedded']['units']:
+        for s in data['_embedded']['sessions']['_embedded']['sessions']:
+            video_id = None
 
-                if 'video_hashed_id' in s and s['video_hashed_id']:
-                    video_id = s['video_hashed_id'].split(':')[1]
+            if 'video_hashed_id' in s and s['video_hashed_id']:
+                video_id = s['video_hashed_id'].split(':')[1]
 
-                if not video_id:
-                    # NOTE: this happens sometimes...
-                    # seems random and temporary but might be some random
-                    # server-side check on user-agent etc?
-                    # ...think it's more stable now with those set to
-                    # emulate an android device
-                    raise Exception('Failed to read video ID from data')
+            if not video_id:
+                # NOTE: this happens sometimes...
+                # seems random and temporary but might be some random
+                # server-side check on user-agent etc?
+                # ...think it's more stable now with those set to
+                # emulate an android device
+                raise Exception('Failed to read video ID from data')
 
-                s_title = s['title']
+            s_title = s['title']
 
-                if self.is_unicode_string(s_title):
-                    s_title = s_title.encode('ascii', 'replace')  # ignore any weird char
+            if self.is_unicode_string(s_title):
+                s_title = s_title.encode('ascii', 'replace')  # ignore any weird char
 
-                file_name = '{} - {}'.format(
-                    str(s['index'] + 1).zfill(2),
-                    slugify(s_title),
-                )
+            file_name = '{} - {}'.format(
+                str(s['index'] + 1).zfill(2),
+                slugify(s_title),
+            )
 
-                self.download_video(
-                    fpath='{base_path}/{session}.mp4'.format(
-                        base_path=base_path,
-                        session=file_name,
-                    ),
-                    video_id=video_id,
-                )
+            self.download_video(
+                fpath='{base_path}/{session}.mp4'.format(
+                    base_path=base_path,
+                    session=file_name,
+                ),
+                video_id=video_id,
+            )
 
-                print('')
+            print('')
 
     def fetch_course_data_by_class_id(self, class_id):
         res = requests.get(
@@ -116,7 +115,6 @@ class Downloader(object):
 
         if not res.status_code == 200:
             raise Exception('Fetch error, code == {}'.format(res.status_code))
-
         return res.json()
 
     def download_video(self, fpath, video_id):
