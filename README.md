@@ -11,22 +11,21 @@ You will need a skillshare premium account to access premium content.
 This script will not handle login for you.
 
 1. Log-in to skillshare in your browser and open up the developer console.
-(cmd-shift-c for chrome on mac)
+   (cmd-shift-c for chrome on mac)
 
-2. Use it to grab your cookie by typing:
-```
-document.cookie
-```
+2. Navigate to Network Tab and refresh the page to view the first request in left panel
 
-3. Copy-paste cookie from developer console (without " if present) into example script.
+3. Right click on request header -> cookie and select copy value then paste in Example file.
+   Note, you should use single quoates (eg. ') to wrap the cookie.
+
+![alt text](example.png)
 
 #### Example:
+
 ```
 from downloader import Downloader
 
-cookie = """
-ADD YOUR COOKIE HERE
-"""
+cookie = 'YOUR COOKIE'
 
 dl = Downloader(cookie=cookie)
 
@@ -38,6 +37,7 @@ dl.download_course_by_url('https://www.skillshare.com/classes/Art-Fundamentals-i
 ```
 
 4. (Optionally) run with docker and docker-compose:
+
 ```
 docker-compose build
 docker-compose run --rm ssdl python example.py
