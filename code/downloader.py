@@ -72,7 +72,9 @@ class Downloader(object):
                 video_id = None
 
                 if 'video_hashed_id' in s and s['video_hashed_id']:
-                    video_id = s['video_hashed_id'].split(':')[1]
+video_id = s['video_hashed_id'].split(':')[1]
+elif 'video_thumbnail_url' in s and s['video_thumbnail_url']:
+video_id = s['video_thumbnail_url'].split('/')[6]
 
                 if not video_id:
                     # NOTE: this happens sometimes...
